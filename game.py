@@ -80,14 +80,28 @@ class MinMaxGame:
                 self.show_state()
                 self.max_player(int(input("MAXIMIZING DECISION:")))
                 bestMove = self.minimax(computer_depth, computer_depth, False)[0]
+                timetaken = time() - starttime
                 print(f"MINIMIZER DECISION: {bestMove}")
                 self.min_player_decision(bestMove)
                 self.compute()
-                print("Time taken by computer:", time() - starttime)
+                print("Time taken by computer:")
                 print("\n")
             self.show_final_score()
         else: # computer as maximiser
-            pass
+            computer_depth = 10
+            while self.total != 0:
+                starttime = time()
+                self.show_state()
+                bestMove = self.minimax(computer_depth, computer_depth, True)[0]
+                timetaken = time() - starttime
+                print(f"MAXIMIZING DECISION: {bestMove}")
+                self.max_player(bestMove)
+                human = int(input("MINIMIZER DECISION: "))
+                self.min_player_decision(human)
+                self.compute()
+                print("Time taken by computer:", timetaken)
+                print("\n")
+            self.show_final_score()
 
     def evaluate(self):
         plus_prob = self.num_plus/max(1/1000000, self.total)
@@ -104,10 +118,10 @@ class MinMaxGame:
             return self.evaluate()
         if turn:
             hash_size = 100
-            state = deepcopy(self.storeState())
             bestEval = -100000
             bestMove = 0
             for x in range(0, 1001, hash_size):
+                state = deepcopy(self.storeState())
                 self.max_player(x)
                 val = self.minimax(og_depth, depth-1, False)
                 if val>bestEval:
